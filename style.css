@@ -1,27 +1,24 @@
 /* style.css */
 
-/* Variáveis de tema buscando recriar as cores exatas do layout proposto */
 :root {
-    --primary-color: #5591F5;      /* Botão azul vibrante */
-    --hover-color: #4377D4;        /* Tom mais escuro para o hover no botão */
+    --primary-color: #4A90E2;      
+    --hover-color: #357ABD;        
     
-    /* Degradê do fundo inspirado no layout da imagem (céu azul com degradê) */
     --bg-gradient-top: #8CD4EC;
     --bg-gradient-bottom: #DCECF6;
     
-    /* Cores das mensagens de erro */
     --error-bg: #FFEBEB;
     --error-text: #E55757;
     --error-border: #D8000C;
     
-    /* Configurações de texto e cartões */
-    --text-title: #224269;         /* Azul escuro para o título (Previsão do Tempo) e a Temperatura */
-    --text-location: #3E5A81;      /* Azul intermediário para a Localização */
+    --text-title: #1F365A;         
+    --text-location: #1F365A;      
+    --text-desc: #4f5a6b;
+    --text-date: #8c98a4;
     --card-bg: #FFFFFF;
     
-    /* Display de Temperatura */
-    --temp-box-bg: #CFE0EF;        /* Azul bem claro para o elemento da temperatura */
-    --input-bg: #F8F9FA;           /* Fundo levemente cinza do input */
+    --temp-box-bg: #DCEAF5;        
+    --input-bg: #F8F9FA;           
 }
 
 * {
@@ -31,26 +28,26 @@
 }
 
 body {
-    /* Tipografia moderna usando Inter como fallback */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    
-    /* Aplicação do background com degradê */
+    font-family: 'Inter', sans-serif;
     background: linear-gradient(180deg, var(--bg-gradient-top) 0%, var(--bg-gradient-bottom) 100%);
     min-height: 100vh;
-    
-    /* Centraliza os conteúdos usando Flexbox */
     display: flex;
     justify-content: center;
     align-items: center;
-    
-    /* Propriedades para suavizar as fontes */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background 1s ease-in-out;
+}
+
+body.night-mode {
+    /* Exatamente igual ao mockup escuro no Exemplo */
+    --bg-gradient-top: #131835;     
+    --bg-gradient-bottom: #1A2035;  
 }
 
 .app-container {
     width: 100%;
-    max-width: 480px; 
+    max-width: 440px; 
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -62,15 +59,17 @@ body {
     background-color: var(--card-bg);
     border-radius: 12px;
     padding: 40px 32px;
-    /* Sombra suave e elegante condizente com as imagens fornecidas */
-    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.08);
+    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.08); 
     width: 100%;
     text-align: center;
     transition: transform 0.3s ease, opacity 0.3s ease;
     animation: fadeIn 0.4s ease-out;
 }
 
-/* Utilitário para ocultar elementos controlados via JS */
+body.night-mode .card {
+    box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.4);
+}
+
 .hidden {
     display: none !important;
 }
@@ -79,6 +78,53 @@ body {
     font-size: 20px;
     font-weight: 600;
     color: var(--text-title);
+    margin-bottom: 24px;
+}
+
+.temperature-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.temperature-display {
+    background-color: var(--temp-box-bg);
+    color: var(--text-title);
+    font-size: 44px;
+    font-weight: 700;
+    padding: 16px 48px; 
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    letter-spacing: -1px;
+}
+
+#weather-icon {
+    font-size: 44px;
+    color: var(--primary-color);
+}
+
+.location-display {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-location);
+    margin-bottom: 12px;
+}
+
+.weather-description {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-desc);
+    margin-bottom: 8px;
+    text-transform: capitalize;
+}
+
+.date-display {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-date);
     margin-bottom: 24px;
 }
 
@@ -91,7 +137,7 @@ body {
 input {
     flex: 1;
     padding: 12px 16px;
-    border: none; /* No layout, o campo não possui borda bem definida, apenas fundo */
+    border: none;
     border-radius: 6px;
     font-size: 13px;
     font-family: inherit;
@@ -101,7 +147,6 @@ input {
     transition: box-shadow 0.2s;
 }
 
-/* Pseudo-elementos para customizar o Placeholder do input */
 input::placeholder {
     color: #A0AAB5;
 }
@@ -150,32 +195,6 @@ button:disabled {
     margin-top: 8px;
 }
 
-/* Área que contorna a Temperatura */
-.temperature-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 24px;
-}
-
-.temperature-display {
-    background-color: var(--temp-box-bg);
-    color: var(--text-title);
-    font-size: 40px;
-    font-weight: 700;
-    padding: 24px 64px; /* O box possui um padding generoso lateral e vertical nas fotos */
-    border-radius: 12px;
-    display: inline-block;
-    letter-spacing: -1px;
-}
-
-.location-display {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text-location);
-    margin-bottom: 24px;
-}
-
-/* Ajustes no botão da Home exibido no card final */
 .icon-button {
     background-color: var(--primary-color);
     border-radius: 8px;
@@ -192,37 +211,18 @@ button:disabled {
     height: 18px;
 }
 
-/* Micro-animações */
 @keyframes fadeIn {
-    from { 
-        opacity: 0; 
-        transform: translateY(15px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideDown {
-    from { 
-        opacity: 0; 
-        transform: translateY(-5px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsividade adicional para celulares menores */
 @media (max-width: 480px) {
-    .card {
-        padding: 32px 20px;
-    }
-    
-    .temperature-display {
-        padding: 24px 48px;
-        font-size: 36px;
-    }
+    .card { padding: 32px 20px; }
+    .temperature-display { padding: 16px 36px; font-size: 36px; gap: 12px; }
+    #weather-icon { font-size: 36px; }
 }
