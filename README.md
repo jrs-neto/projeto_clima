@@ -126,6 +126,26 @@ O script principal do projeto (`api.js`) detém de forma modular e isolada toda 
 
 <br />
 
+## 🔒 Segurança, Privacidade e Conformidade
+
+A infraestrutura deste projeto foi auditada de acordo com as boas práticas ágeis de desenvolvimento de software para assegurar os direitos dos usuários e a estabilidade da aplicação em repositórios abertos.
+
+**1. Privacidade e Conformidade (LGPD/GDPR):**
+- **Coleta de Dados Pessoais:** O aplicativo é inteiramente gerido no lado do cliente (*Client-Side Rendering*). Nenhuma Informação Pessoalmente Identificável (PII) é salva em repositórios próprios, transacionada, ou compartilhada.
+- **Cache Local Base:** O sistema de Cache criado na *Aplicação 05* para ganho em requisições utiliza manipulação exclusiva pelo disco do usuário via *LocalStorage*, operando isolado de sessões maliciosas e sob auto-expiração sistêmica (10 minutos).
+
+**2. Padrões de Segurança da Aplicação (AppSec):**
+- **Sanitização do DOM e Prevenção de XSS:** Todos os metadados consumidos da rede externa são renderizados no HTML por comandos seguros (`.textContent` e `.className`), jamais interpolados de maneira bruta como strings compiláveis. Isso blinda a aplicação completamente de ataques via *Cross-Site Scripting* (XSS) causados por nomes customizados ou requisições forçadas.
+- **Isolamento de Erros e Quedas:** O projeto consome Exceções em blocos `Try-Catch` isolados das regras front-end (Modelo Traci), mitigando ataques DDoS ou *Rate Limiting* hostil (Código 429 API) sem causar travamento crítico no navegador.
+- **HTTPS de Ponta a Ponta:** Todo fluxo operado pelas APIs da **Open-Meteo** é forçado sob proteção criptográfica básica de requisições seguras `HTTPS`.
+
+**3. Licenciamento e Compliance de Dependências:**
+- **Open-Meteo API:** A integração com a plataforma operadora ocorre de forma totalmente gratuita e compatível com as regras de fair-use da organização *Open-Source Forecast*, sob diretrizes não-comerciais restritas ao desenvolvimento e estudo.
+- **Dependências de Infraestrutura (NPM e Node):** Ferramentas de suporte massivo como motores do *Jest* foram estritamente arquitetadas e mapeadas em arquivos de contexto isolado (`devDependencies` no `package.json`). Nenhum módulo *Node* pesado vaza ou é embarcado em arquivos da aplicação distribuída na Web final.  
+- **Propriedades Intelectuais Visuais:** Tipografias do pacote **Google Fonts (Outfit)** e renderizados SVG livres do hub **Weather Icons** funcionam com base em suas respectivas políticas e endossos transparentes na Web, amparados sob licenças SIL Open Font e MIT.
+
+<br />
+
 ## 🤝 Contribuições
 
 Este projeto possui fins educacionais e de desenvolvimento, mas contribuições são muito bem-vindas. Você pode contribuir de várias formas:
