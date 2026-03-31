@@ -186,6 +186,12 @@ if (typeof document !== 'undefined') {
             const city = cityInput.value.trim();
             if (!city) return;
 
+            // Validação de UX/Segurança: Impede o disparo de Códigos Postais (CEP/ZIP) ou coordenadas
+            if (!/[a-zA-ZÀ-ÿ]/.test(city)) {
+                showError('Formato inválido: Digite o nome de uma cidade usando somente letras.');
+                return;
+            }
+
             hideError();
             setLoading(true);
 
