@@ -36,6 +36,9 @@ O aplicativo **Previsão do Tempo** tem como objetivo principal fornecer aos usu
 - **Modo Noturno Automático Dinâmico:** A interface gráfica se adapta com um tema de degradê escuro automaticamente se a métrica atual daquela cidade lida no momento da consulta indicar período noturno.
 - **Ícones Atmosféricos Mapeados:** Interface reativa implementando a biblioteca de vetores *Weather Icons*, que alterna em dezenas de animações conforme o código meteorológico (sol pleno, chuva fraca, neve moderada, tempestade com granizo, etc).
 - **Tratamento de Exceções Base (Modelo TRACI):** Informações de alertas em tela contra falhas do fornecimento de clima, perda intermitente de conexão ou limites abusivos.
+- **Interface Premium (Glassmorphism):** Apresenta design focado na visibilidade transparente do vidro fosco, fundos fotográficos dinâmicos de ultra-qualidade que variam entre o cenário vivo do dia e o estrelado da noite, além de múltiplas micro-animações.
+- **Cache Local Inteligente:** Sistema de armazenamento via `LocalStorage` que preserva interações recentes do aplicativo por 10 minutos, isentando a Open-Meteo de requisições repetitivas ou acidentes em pesquisas já formatadas e conhecidas.
+- **Métricas Avançadas Aprofundadas:** Coleta e exibição em tempo real de *Temperatura Mínima/Máxima*, índice de *Umidade Relativa*, *Volume de Precipitações* (mm) e *Velocidade Base do Vento* (km/h) resgatados da rede.
 
 <br />
 
@@ -96,7 +99,7 @@ O script principal do projeto (`api.js`) detém de forma modular e isolada toda 
  * @async
  * @function fetchWeatherData
  * @param {string} city - Nome da cidade a ser pesquisada (exemplo: "São Paulo").
- * @returns {Promise<{temp: number, locationStr: string, dateStr: string, desc: string, iconClass: string, isNight: boolean}>}
+ * @returns {Promise<{temp: number, tempMax: number, tempMin: number, humidity: number, windSpeed: number, precipitation: string, locationStr: string, dateStr: string, desc: string, iconClass: string, isNight: boolean}>}
  * Promessa resolvida com os dados climáticos devidamente formatados e traduzidos para a injestão segura dos campos gráficos da UI (DOM).
  * 
  * @throws {Error} Lança TypeError 'NETWORK_ERROR' se a requisição falhar estritamente por falta de TCP de rede (CORS/Offline).
@@ -142,5 +145,5 @@ Este projeto está licenciado sob a licença **MIT**. Sinta-se livre para estuda
 
 ## 📞 Contato
 
-Desenvolvido por [**José**](https://github.com/jrs-neto)
+Desenvolvido por [**José Rodrigues**](https://github.com/jrs-neto)
 Para dúvidas, sugestões ou colaborações, utilize as **issues do GitHub** ou entre em contato diretamente pelo perfil.

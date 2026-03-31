@@ -8,7 +8,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -44,6 +44,37 @@
             <!-- Descrição e Sub-títulos formatados em hierarquia -->
             <div id="weather-description" class="weather-description">--</div>
             <div id="date-display" class="date-display">--</div>
+
+            <!-- Adição nova: MÁXIMA e MÍNIMA -->
+            <div class="min-max-wrapper">
+                <div class="min-max-item">
+                    <span class="min-max-label">MÁXIMA</span>
+                    <span id="temp-max" class="min-max-value">--º</span>
+                </div>
+                <div class="min-max-item">
+                    <span class="min-max-label">MÍNIMA</span>
+                    <span id="temp-min" class="min-max-value">--º</span>
+                </div>
+            </div>
+
+            <!-- Adição nova: Umidade, Vento, Precipitação -->
+            <div class="extra-weather-details">
+                <div class="detail-box">
+                    <i class="wi wi-humidity"></i>
+                    <span class="detail-label">UMIDADE</span>
+                    <span id="humidity-detail" class="detail-value">--%</span>
+                </div>
+                <div class="detail-box">
+                    <i class="wi wi-strong-wind"></i>
+                    <span class="detail-label">VENTO</span>
+                    <span id="wind-detail" class="detail-value">-- km/h</span>
+                </div>
+                <div class="detail-box">
+                    <i class="wi wi-raindrops"></i>
+                    <span class="detail-label">PRECIPITAÇÃO</span>
+                    <span id="precip-detail" class="detail-value">-- mm</span>
+                </div>
+            </div>
 
             <button id="home-button" class="icon-button" aria-label="Voltar para a busca">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

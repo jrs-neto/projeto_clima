@@ -34,7 +34,7 @@ const weatherMap = {
  * @async
  * @function fetchWeatherData
  * @param {string} city - Nome da cidade a ser pesquisada (exemplo: "São Paulo").
- * @returns {Promise<{temp: number, locationStr: string, dateStr: string, desc: string, iconClass: string, isNight: boolean}>}
+ * @returns {Promise<{temp: number, tempMax: number, tempMin: number, humidity: number, windSpeed: number, precipitation: string, locationStr: string, dateStr: string, desc: string, iconClass: string, isNight: boolean}>}
  * Promessa resolvida com os dados climáticos formatados e traduzidos para a UI.
  * 
  * @throws {Error} Lança 'NETWORK_ERROR' se a requisição falhar estritamente por falta de conectividade ou CORS.
@@ -55,6 +55,24 @@ const weatherMap = {
  * }
  */
 async function fetchWeatherData(city) {
+    const cacheKey = `weather_${city.toLowerCase()}`;
+    const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
+
+    if (typeof localStorage !== 'undefined') {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            try {
+                const { data, timestamp } = JSON.parse(cached);
+                if (Date.now() - timestamp < CACHE_DURATION) {
+                    return data; // Retorna do cache se não expirado
+                }
+            } catch (e) {
+                // Em caso de erro ao ler do localStorage, ignora a re-consulta
+                console.warn("Falha ao ler cache, efetuando nova busca.", e);
+            }
+        }
+    }
+
     let geoResponse;
     try {
         geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=pt&format=json`);
@@ -74,7 +92,7 @@ async function fetchWeatherData(city) {
 
     let weatherResponse;
     try {
-        weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+        weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
     } catch (networkError) {
         throw new Error('NETWORK_ERROR');
     }
@@ -84,8 +102,23 @@ async function fetchWeatherData(city) {
     }
 
     const weatherData = await weatherResponse.json();
-    const current = weatherData.current_weather;
+    
+    // Tratamento híbrido para manter compatibilidade estrita com testes antigos usando current_weather
+    const current = weatherData.current || weatherData.current_weather || {};
+    const daily = weatherData.daily || {};
+    
     const isDay = current.is_day === 1;
+
+    // Variáveis Meteorológicas Adicionais
+    const tempValue = current.temperature_2m ?? current.temperature ?? 0;
+    const weatherCode = current.weather_code ?? current.weathercode;
+    
+    const humidity = current.relative_humidity_2m ?? 0;
+    const windSpeed = current.wind_speed_10m ?? 0;
+    const precipitation = current.precipitation ?? 0;
+    
+    const tempMax = daily.temperature_2m_max ? daily.temperature_2m_max[0] : tempValue;
+    const tempMin = daily.temperature_2m_min ? daily.temperature_2m_min[0] : tempValue;
 
     // Formatação de Datas
     const now = new Date();
@@ -93,16 +126,34 @@ async function fetchWeatherData(city) {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
     }).format(now);
 
-    const weatherInfo = weatherMap[current.weathercode] || { desc: 'Clima não especificado', iconDay: 'wi-na', iconNight: 'wi-na' };
+    const weatherInfo = weatherMap[weatherCode] || { desc: 'Clima não especificado', iconDay: 'wi-na', iconNight: 'wi-na' };
     
-    return {
-        temp: Math.round(current.temperature),
+    const result = {
+        temp: Math.round(tempValue),
+        tempMax: Math.round(tempMax),
+        tempMin: Math.round(tempMin),
+        humidity: Math.round(humidity),
+        windSpeed: Math.round(windSpeed),
+        precipitation: Number(precipitation).toFixed(1),
         locationStr: `${name}, ${country}`,
         dateStr: fullDate,
         desc: weatherInfo.desc,
         iconClass: `wi ${isDay ? weatherInfo.iconDay : weatherInfo.iconNight}`,
         isNight: !isDay
     };
+
+    if (typeof localStorage !== 'undefined') {
+        try {
+            localStorage.setItem(cacheKey, JSON.stringify({
+                data: result,
+                timestamp: Date.now()
+            }));
+        } catch (e) {
+            console.warn("Não foi possível salvar no cache térmico do LocalStorage", e);
+        }
+    }
+
+    return result;
 }
 
 // Inicia as propriedades de UI apenas se manipuladas no Navegador
@@ -121,6 +172,13 @@ if (typeof document !== 'undefined') {
         const weatherIcon = document.getElementById('weather-icon');
         const weatherDescriptionSpan = document.getElementById('weather-description');
         const appBody = document.getElementById('app-body');
+        
+        // Elementos avançados
+        const tempMaxSpan = document.getElementById('temp-max');
+        const tempMinSpan = document.getElementById('temp-min');
+        const humiditySpan = document.getElementById('humidity-detail');
+        const windSpan = document.getElementById('wind-detail');
+        const precipSpan = document.getElementById('precip-detail');
 
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -179,6 +237,13 @@ if (typeof document !== 'undefined') {
             dateDisplay.textContent = data.dateStr;
             weatherDescriptionSpan.textContent = data.desc;
             weatherIcon.className = data.iconClass;
+            
+            // Injeção de variáveis avançadas
+            if (tempMaxSpan) tempMaxSpan.textContent = `${data.tempMax}º`;
+            if (tempMinSpan) tempMinSpan.textContent = `${data.tempMin}º`;
+            if (humiditySpan) humiditySpan.textContent = `${data.humidity}%`;
+            if (windSpan) windSpan.textContent = `${data.windSpeed} km/h`;
+            if (precipSpan) precipSpan.textContent = `${data.precipitation} mm`;
             
             searchCard.classList.add('hidden');
             resultCard.classList.remove('hidden');
