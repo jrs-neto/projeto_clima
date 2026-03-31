@@ -414,6 +414,47 @@ body.night-mode .icon-button {
     height: 26px;
 }
 
+/* Base de Confiança do Rodapé - Transparente e Fosco */
+.privacy-notice {
+    margin-top: 24px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-title);
+    text-align: center;
+    line-height: 1.5;
+    background: var(--card-bg);
+    padding: 14px 18px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    animation: fadeIn 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+body.night-mode .privacy-notice {
+    color: var(--text-location);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.privacy-notice p {
+    margin-bottom: 6px;
+}
+
+.privacy-notice p:last-child {
+    margin-bottom: 0;
+}
+
+.privacy-notice a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.privacy-notice a:hover {
+    text-decoration: underline;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(30px) scale(0.95); }
     to { opacity: 1; transform: translateY(0) scale(1); }
@@ -448,7 +489,7 @@ body.night-mode .icon-button {
         font-size: 13px; 
     }
     
-    /* Responsividade do Botão Buscar x Input -> Fica em Pilha pra nao vazar ninca. */
+    /* Responsividade do Botão Buscar x Input -> Fica em Pilha  */
     .input-group { 
         flex-direction: column; 
     }
