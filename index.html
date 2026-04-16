@@ -10,16 +10,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="app-body">
+    <!-- Overlay de Carregamento -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p class="loading-text">Buscando dados...</p>
+    </div>
+
     <div class="app-container">
         <!-- Cartão de Busca: Exibido inicialmente -->
         <main class="card" id="search-card">
             <h1 class="card-title">Previsão do Tempo</h1>
+            <p class="card-subtitle">Digite uma cidade para ver o clima atual.</p>
             <form id="search-form">
                 <div class="input-group">
-                    <input type="text" id="city-input" placeholder="Digite o nome da cidade" required aria-label="Nome da cidade">
+                    <input type="text" id="city-input" placeholder="Ex: Rio de Janeiro, Brasil" aria-label="Nome da cidade">
                     <button type="submit" id="search-button">Buscar</button>
                 </div>
                 <div id="error-message" class="error-message hidden" role="alert">
@@ -57,6 +65,14 @@
                 </div>
             </div>
 
+            <!-- Adição Opção 2: Previsão dos Próximos Dias -->
+            <div class="forecast-container" id="forecast-container">
+                <h2 class="forecast-title">Próximos Dias</h2>
+                <div id="forecast-list" class="forecast-list">
+                    <!-- Cards de previsão serão injetados via JS -->
+                </div>
+            </div>
+
             <!-- Adição nova: Umidade, Vento, Precipitação -->
             <div class="extra-weather-details">
                 <div class="detail-box">
@@ -88,6 +104,7 @@
         <footer class="privacy-notice">
             <p>🔒 Esta aplicação não coleta, armazena ou compartilha dados pessoais. As buscas são processadas em tempo real e não são registradas.</p>
             <p>📊 Dados meteorológicos fornecidos por <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo.com</a> sob licença <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></p>
+            <p>👨‍💻 Desenvolvido por <a href="https://jrs-neto.github.io/portfolio/" target="_blank" rel="noopener noreferrer">José Rodrigues</a></p>
         </footer>
     </div>
     <script src="api.js"></script>

@@ -92,7 +92,7 @@ async function fetchWeatherData(city) {
 
     let weatherResponse;
     try {
-        weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+        weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`);
     } catch (networkError) {
         throw new Error('NETWORK_ERROR');
     }
@@ -128,6 +128,29 @@ async function fetchWeatherData(city) {
 
     const weatherInfo = weatherMap[weatherCode] || { desc: 'Clima não especificado', iconDay: 'wi-na', iconNight: 'wi-na' };
     
+    // Processamento da Previsão para os Próximos 5 Dias (Opção 2)
+    const forecast = [];
+    if (daily.time && daily.time.length > 1) {
+        // Começamos do índice 1 (amanhã) até o 5 (5 dias de previsão)
+        for (let i = 1; i <= 5 && i < daily.time.length; i++) {
+            const date = new Date(daily.time[i] + 'T00:00:00');
+            const dayName = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(date);
+            const dayDate = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long' }).format(date);
+            
+            const dayCode = daily.weather_code[i];
+            const dayInfo = weatherMap[dayCode] || { desc: 'Clima não especificado', iconDay: 'wi-na' };
+            
+            forecast.push({
+                dayName,
+                dayDate,
+                tempMax: Math.round(daily.temperature_2m_max[i]),
+                tempMin: Math.round(daily.temperature_2m_min[i]),
+                iconClass: `wi ${dayInfo.iconDay}`, // Em previsões diárias, costuma-se usar o ícone de 'dia'
+                desc: dayInfo.desc
+            });
+        }
+    }
+
     const result = {
         temp: Math.round(tempValue),
         tempMax: Math.round(tempMax),
@@ -139,7 +162,8 @@ async function fetchWeatherData(city) {
         dateStr: fullDate,
         desc: weatherInfo.desc,
         iconClass: `wi ${isDay ? weatherInfo.iconDay : weatherInfo.iconNight}`,
-        isNight: !isDay
+        isNight: !isDay,
+        forecast // Nova propriedade para a Opção 2
     };
 
     if (typeof localStorage !== 'undefined') {
@@ -173,30 +197,34 @@ if (typeof document !== 'undefined') {
         const weatherDescriptionSpan = document.getElementById('weather-description');
         const appBody = document.getElementById('app-body');
         
-        // Elementos avançados
+        // Injeção de Detalhes
         const tempMaxSpan = document.getElementById('temp-max');
         const tempMinSpan = document.getElementById('temp-min');
         const humiditySpan = document.getElementById('humidity-detail');
         const windSpan = document.getElementById('wind-detail');
         const precipSpan = document.getElementById('precip-detail');
+        const forecastList = document.getElementById('forecast-list');
 
+        // Ação Principal: Buscar Cidade Única (Funcionalidade Original)
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const city = cityInput.value.trim();
-            if (!city) return;
+            if (!city) {
+                showError('Digite o nome de uma cidade.');
+                return;
+            }
 
-            // Validação de UX/Segurança: Impede o disparo de Códigos Postais (CEP/ZIP) ou coordenadas
+            // Validação de UX/Segurança
             if (!/[a-zA-ZÀ-ÿ]/.test(city)) {
-                showError('Formato inválido: Digite o nome de uma cidade usando somente letras.');
+                showError('Formato inválido: Digite o nome de uma cidade.');
                 return;
             }
 
             hideError();
-            setLoading(true);
+            setLoadingSearch(true);
 
             try {
-                // A funcionalidade inteira foi extraída! O código de manipulação gráfica de DOM agora fica incrivelmente legível;
                 const data = await fetchWeatherData(city);
                 
                 if (data.isNight) appBody.classList.add('night-mode');
@@ -205,19 +233,33 @@ if (typeof document !== 'undefined') {
                 showResult(data);
             } catch (error) {
                 console.error(error);
-                if (error.message === 'NETWORK_ERROR') {
-                    showError('Sem conexão com a internet ou rede bloqueada.');
-                } else if (error.message === 'API_ERROR') {
-                    showError('Os serviços de clima estão indisponíveis no momento.');
-                } else if (error.message === 'CITY_NOT_FOUND') {
-                    showError('A cidade digitada não existe. Verifique o nome.');
-                } else {
-                    showError('Aconteceu um erro inesperado. Tente novamente.');
-                }
+                handleError(error);
             } finally {
-                setLoading(false);
+                setLoadingSearch(false);
             }
         });
+
+        function handleError(error) {
+            if (error.message === 'NETWORK_ERROR') {
+                showError('Sem conexão com a internet.');
+            } else if (error.message === 'API_ERROR') {
+                showError('O serviço de clima está indisponível.');
+            } else if (error.message === 'CITY_NOT_FOUND') {
+                showError('Cidade não encontrada.');
+            } else {
+                showError('Erro inesperado.');
+            }
+        }
+
+        function setLoadingSearch(isLoading) {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (isLoading) {
+                loadingOverlay.classList.remove('hidden');
+            } else {
+                loadingOverlay.classList.add('hidden');
+            }
+            searchButton.disabled = isLoading;
+        }
 
         homeButton.addEventListener('click', () => showSearch());
 
@@ -232,11 +274,6 @@ if (typeof document !== 'undefined') {
             errorMessage.textContent = 'Cidade não encontrada. Tente novamente.'; 
         }
 
-        function setLoading(isLoading) {
-            searchButton.textContent = isLoading ? 'Buscando...' : 'Buscar';
-            searchButton.disabled = isLoading;
-        }
-
         function showResult(data) {
             temperatureSpan.textContent = data.temp;
             locationNameSpan.textContent = data.locationStr;
@@ -244,12 +281,34 @@ if (typeof document !== 'undefined') {
             weatherDescriptionSpan.textContent = data.desc;
             weatherIcon.className = data.iconClass;
             
-            // Injeção de variáveis avançadas
             if (tempMaxSpan) tempMaxSpan.textContent = `${data.tempMax}º`;
             if (tempMinSpan) tempMinSpan.textContent = `${data.tempMin}º`;
             if (humiditySpan) humiditySpan.textContent = `${data.humidity}%`;
             if (windSpan) windSpan.textContent = `${data.windSpeed} km/h`;
             if (precipSpan) precipSpan.textContent = `${data.precipitation} mm`;
+
+            if (forecastList && data.forecast) {
+                forecastList.innerHTML = '';
+                data.forecast.forEach(day => {
+                    const item = document.createElement('div');
+                    item.className = 'forecast-item';
+                    item.innerHTML = `
+                        <div class="forecast-day-info">
+                            <span class="forecast-day-name">${day.dayName}</span>
+                            <span class="forecast-day-date">${day.dayDate}</span>
+                        </div>
+                        <div class="forecast-weather">
+                            <i class="${day.iconClass} forecast-icon"></i>
+                            <span class="forecast-desc">${day.desc}</span>
+                        </div>
+                        <div class="forecast-temps">
+                            <span class="forecast-temp-item forecast-temp-max">▲ ${day.tempMax}º</span>
+                            <span class="forecast-temp-item forecast-temp-min">▼ ${day.tempMin}º</span>
+                        </div>
+                    `;
+                    forecastList.appendChild(item);
+                });
+            }
             
             searchCard.classList.add('hidden');
             resultCard.classList.remove('hidden');

@@ -34,7 +34,9 @@ O aplicativo **Previsão do Tempo** tem como objetivo principal fornecer aos usu
 - **Pesquisa por Cidades:** O usuário pode digitar o nome de qualquer cidade para obter a previsão do clima de forma ágil através de formulários clean.
 - **Integração em 2 Etapas:** Consumo e cascateamento da *Geocoding API* para obter as coordenadas (Latitude/Longitude precisas do nome) e, em seguida, disparo na *Forecast API* para obter a previsão daquele exato local.
 - **Modo Noturno Automático Dinâmico:** A interface gráfica se adapta com um tema de degradê escuro automaticamente se a métrica atual daquela cidade lida no momento da consulta indicar período noturno.
-- **Ícones Atmosféricos Mapeados:** Interface reativa implementando a biblioteca de vetores *Weather Icons*, que alterna em dezenas de animações conforme o código meteorológico (sol pleno, chuva fraca, neve moderada, tempestade com granizo, etc).
+- **Previsão de 5 Dias Avançada:** Além do clima atual, o sistema agora performa previsões diárias detalhadas para os próximos 5 dias, exibindo temperaturas máximas e mínimas.
+- **Micro-animações de Busca (Loading Overlay):** Sistema de carregamento em tela cheia com *glassmorphism* e *spinner* dinâmico que melhora a percepção de performance e feedback durante as requisições à API.
+- **Identidade Visual (Favicon):** Implementação de ícone de aba personalizado em 3D integrado ao tema do projeto.
 - **Tratamento de Exceções Base (Modelo TRACI):** Informações de alertas em tela contra falhas do fornecimento de clima, perda intermitente de conexão ou limites abusivos.
 - **Interface Premium (Glassmorphism):** Apresenta design focado na visibilidade transparente do vidro fosco, fundos fotográficos dinâmicos de ultra-qualidade que variam entre o cenário vivo do dia e o estrelado da noite, além de múltiplas micro-animações.
 - **Cache Local Inteligente:** Sistema de armazenamento via `LocalStorage` que preserva interações recentes do aplicativo por 10 minutos, isentando a Open-Meteo de requisições repetitivas ou acidentes em pesquisas já formatadas e conhecidas.
@@ -60,8 +62,15 @@ Por conta de a aplicação ter sido inteiramente estruturada com arquivos nativo
    git clone https://github.com/jrs-neto/projeto_clima.git
    ```
 
-2. **Abra e Use**
-   Basta selecionar o arquivo raiz `index.html` e executá-lo num browser moderno de sua preferência (Google Chrome, Firefox, Microsoft Edge, Safari). Não requer npm configs para executar a UI.
+2. **Servidor de Desenvolvimento (Recomendado)**
+   A aplicação conta com um script de live-reload para facilitar o desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+   Isso abrirá automaticamente a aplicação no seu navegador padrão.
+
+3. **Execução Manual**
+   Caso prefira, basta abrir o arquivo `index.html` diretamente num browser moderno (Chrome, Firefox, Edge, Safari). Não requer configurações complexas para visualização básica.
 
 3. **Consulte o Tempo**
    Centralizado pela página de Início, digite o nome de qualquer munícipio ou Estado mundial na caixa de Input e clique em **Buscar**.
@@ -99,7 +108,7 @@ O script principal do projeto (`api.js`) detém de forma modular e isolada toda 
  * @async
  * @function fetchWeatherData
  * @param {string} city - Nome da cidade a ser pesquisada (exemplo: "São Paulo").
- * @returns {Promise<{temp: number, tempMax: number, tempMin: number, humidity: number, windSpeed: number, precipitation: string, locationStr: string, dateStr: string, desc: string, iconClass: string, isNight: boolean}>}
+ * @returns {Promise<{temp: number, tempMax: number, tempMin: number, humidity: number, windSpeed: number, precipitation: string, locationStr: string, dateStr: string, desc: string, iconClass: string, isNight: boolean, forecast: Array}>}
  * Promessa resolvida com os dados climáticos devidamente formatados e traduzidos para a injestão segura dos campos gráficos da UI (DOM).
  * 
  * @throws {Error} Lança TypeError 'NETWORK_ERROR' se a requisição falhar estritamente por falta de TCP de rede (CORS/Offline).
