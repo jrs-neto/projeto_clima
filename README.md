@@ -16,7 +16,6 @@
     <br />
   <img src="https://img.shields.io/github/issues/jrs-neto/projeto_clima?style=flat-square" />
   <img src="https://img.shields.io/github/issues-pr/jrs-neto/projeto_clima?style=flat-square" />
-  <img src="https://img.shields.io/badge/bootcamp-Generation%20Brasil-orange?style=flat-square"/>
 </div>
 
 ------
@@ -62,15 +61,8 @@ Por conta de a aplicação ter sido inteiramente estruturada com arquivos nativo
    git clone https://github.com/jrs-neto/projeto_clima.git
    ```
 
-2. **Servidor de Desenvolvimento (Recomendado)**
-   A aplicação conta com um script de live-reload para facilitar o desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-   Isso abrirá automaticamente a aplicação no seu navegador padrão.
-
-3. **Execução Manual**
-   Caso prefira, basta abrir o arquivo `index.html` diretamente num browser moderno (Chrome, Firefox, Edge, Safari). Não requer configurações complexas para visualização básica.
+2. **Abra e Use**
+   Como a aplicação utiliza tecnologias nativas da web, basta abrir o arquivo raiz `index.html` em qualquer navegador moderno (Chrome, Firefox, Edge, Safari). Não requer configurações complexas ou instalações para visualização.
 
 3. **Consulte o Tempo**
    Centralizado pela página de Início, digite o nome de qualquer munícipio ou Estado mundial na caixa de Input e clique em **Buscar**.

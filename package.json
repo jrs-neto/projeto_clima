@@ -7,8 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest",
-    "dev": "live-server"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,7 +23,6 @@
   "homepage": "https://github.com/jrs-neto/projeto_clima#readme",
   "devDependencies": {
     "jest": "^30.3.0",
-    "jest-environment-jsdom": "^30.3.0",
-    "live-server": "^1.2.2"
+    "jest-environment-jsdom": "^30.3.0"
   }
 }
